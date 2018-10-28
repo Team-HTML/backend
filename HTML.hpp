@@ -1,14 +1,23 @@
+//Dongyao Zhu
 
+#ifndef HTML_HPP
+#define HTML_HPP
 #include "Tag.hpp"
 #include <vector>
 #include <queue>
 #include <stack>
+#include <iostream>
 #include <fstream>
 using namespace std;
 
-class HTML{
+class TagPtrComp{
+    public:
+        bool operator() (Tag * & lhs, Tag * & rhs) const{
+            return *lhs < *rhs;
+        }
+};
 
-        pair<int, int> size;
+class HTML{
 
         Tag * root;
 
@@ -16,18 +25,16 @@ class HTML{
 
         HTML(string filePath);
 
+        HTML(priority_queue<Tag *, vector<Tag *>, TagPtrComp> & tags);
+
         ~HTML();
-
-        bool insert(Tag * tag);
-
-        bool remove(Tag * tag);
-
-        Tag * wrap(vector<Tag *> tags, string newTagName);
-
-        vector<Tag *> dissect(Tag * group, vector<Tag *> parts);
 
         priority_queue<Tag *, vector<Tag *>, TagPtrComp> parse(string filePath);
 
-        bool toHTML(string path);
+        bool toSourceCode(string pathHTML, string pathCSS);
+
+        void helper(ofstream & html, ofstream & css, Tag * current, int count);
 
 };
+
+#endif

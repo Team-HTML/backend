@@ -4,158 +4,151 @@
 
 /*
  * name: constructor
- * TODO
+ * description: builds the HTML tree structure from the tags
+        row by row, each row determined by a reference tag that 
+        starts most topleft and spans most row.
+ * input: size of window, a priority queue of tags, given in the generator.cpp
+ * output: a HTML tree
  */
-HTML :: HTML(string filePath){
-    root = new Tag(0, 0, 1, 100, "head", "", "", "");
-    priority_queue<Tag *, vector<Tag *>, TagPtrComp> tags = parse(filePath);
-    while(!tags.empty()){
-        cout << *(tags.top()) << endl;
-        delete tags.top();
-        tags.pop();
-    }  
-}
+HTML :: HTML(double width, double height, 
+    priority_queue<Tag *, vector<Tag *>, TagPtrComp> & tags){
 
-/*
- * name: constructor
- * TODO
- */
-HTML :: HTML(priority_queue<Tag *, vector<Tag *>, TagPtrComp> & tags){
-    root = new Tag(0, 0, 100, 100, "body", "", "", "\tbackground-color: #293030;\n");
+    root = new Tag(0, 0, width, height, "body", "", 
+        "\tbackground-color: #293030;\n");
     double last = 0;
     //while all not finished
     while(!tags.empty()){
         Tag * current = tags.top();
-        //cout << "current: " << *current << endl;
+        //this pq will store all tags in this row
         priority_queue<Tag *, vector<Tag *>, sortS> row;
         tags.pop();
-        //while row not finished
+        //while this row not finished
         while(!tags.empty()){
             Tag * next = tags.top();
-            //cout << "next: " << *next << endl;
-            int relation = current -> relation(next);
-            //next is below(next row), moving to next row
-            if(relation == ABOVE){
+            //next is below(it is in next row), moving to next row
+            if(current -> botRightY() <= next -> topLeftY()){
                 break;
-            }
-            //valid relation, save in row
-            else if(relation == LEFT || relation == RIGHT){
-                //cout << "   is left / right, push next to row\n";
-                current = current -> expandRow(next);//shoud include more rows
+            }else{
+                //valid relations: next tag is NOT BELOW reference, which
+                //may need to include more rows if next protrudes downwards
+                current = current -> expandRow(next);
                 row.push(next);
                 tags.pop(); 
             }
-            //valid relation, save in row
-            else if(relation == SUPER){
-                //cout << "   is super, push next to row";
-                row.push(next);
-                tags.pop();
-            }
-            //this is a debatable solution
-            else if(relation == OVERLAP){
-                //cout << "   OVERLAP, push next to row\n";
-                row.push(next);
-                tags.pop();
-            }
         }//end of while
-        //cout << "   row done, pushing this to row\n";
         row.push(current);
-        //cout << "row size: " << row.size() << endl;
-        //think of huffman encoding
+        //wrap row elements 2 by 2 then push back, think of huffman encoding
+        //note: not really necessary, but will make html structure more clear
         while(row.size() > 1){
-            //cout << "   wrapping: \n";
             Tag * a = row.top();
             row.pop();
             Tag * b = row.top();
             row.pop();
-            //cout << "       " << *a << endl;
-            //cout << "       " << *b << endl;
-            Tag * w = Tag :: wrap(a, b);
-            row.push(w);
-            //cout << "   wrapped to " << *w << endl;
+            row.push(Tag :: wrap(a, b));
         }
+        //the final gigantic wrapped element
         if(row.size() == 1){
             Tag * t = row.top();
-            double moveY = t -> tl.first - last;
+            //see Tag for relative position math
+            double moveY = t -> topLeftY() - last;
             t -> style += "\ttop: " + to_string(moveY) + "%;\n";
-            t -> style += "\tleft: " + to_string(t -> tl.second) + "%;\n";
-            last = t -> br.first - (moveY > 0 ? moveY : 0);
+            t -> style += "\tleft: " + to_string(t -> topLeftX()) + "%;\n";
+            //total vertical adjustments
+            last = t -> botRightY() - (moveY > 0 ? moveY : 0);
             t -> parent = root;
             root -> children.push_back(t);
             row.pop();
         }
     }//end of while
-/*    for(auto it = root -> children.begin(); 
-            it != root -> children.end(); ++it){
-        cout << "body's children: " << **it << endl;
-    }*/
 }//HTML
 
 /*
  * name: destructor
+ * description: delegate to Tag's destructor
+ * input/output: none
  */
 HTML :: ~HTML(){
-    cout << "~ " << this << endl;
     delete root;
 }
 
 /*
- * name: parse
- * description: read tags from file (json?) from given file path
- * input: a string of the file path
- * output: a vector of tag * read from the file
- */
-priority_queue<Tag *, vector<Tag *>, TagPtrComp> HTML :: parse(string filePath){
-    priority_queue<Tag *, vector<Tag *>, TagPtrComp> pq;
-    return pq;
-}
-
-/*
- * name: toSourceCode
+ * name: write
  * description: generate HTML and CSS source code from html structure tree, DFS
- * input: a designated path to store the file
+ * input: a designated path to store the file, a string css file path
  * output: whether successfully written a html and css file to the path
  */
-bool HTML :: toSourceCode(string pathHTML, string pathCSS){
-    if(!root){
+bool HTML :: write(string pathHTML, string pathCSS){
+    ofstream html(pathHTML);
+    ofstream css(pathCSS);
+    if(!root || !html.is_open() || !css.is_open()){
         return false;
     }
-    ofstream html(pathHTML);
-    html << "<!DOCTYPE html>\n<html>\n" << 
-        "<head>\n\t<meta name = \"viewport\" content = \"" << 
-        "width = device-width, initial-scale = 1, " << 
-        "maximum-scale = 1.0, user-scalable = 0\"/>\n" <<
-        "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"";
-    html << pathCSS << "\">\n</head>\n";
-    ofstream css(pathCSS);
-    helper(html, css, root, 0);
-    html << "</html>\n";
+    writeHeader(html, pathCSS);
+    writeSize(css);
+    string tab = "\t";
+    for(Tag * t : root -> children){
+        helper(html, css, t, tab);
+    }
+    html << "</body>\n</html>\n";
     html.close();
     css.close();
     return true;
 }
 
-//running DFS for a more clear html structure
-void HTML :: helper(ofstream & html, ofstream & css, Tag * current, int tabCount){
-    //cout << "visiting " << (*current) << endl;
-    string tabs = "";
-    for(int i = 0; i < tabCount; i++){
-        tabs += "\t";
-    }
+void HTML :: addStyle(string pathCSS){
+    moreCSS += "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"" + 
+        pathCSS + "\">\n";
+}
+
+/*
+ * name: writeHeader
+ * description: writes out necessary HTML beginning information and css links
+ * input: an ofstream & to write, a string of css link
+ * output: none
+ */
+void HTML :: writeHeader(ofstream & html, string pathCSS){
+    html << header << moreCSS << css << pathCSS << "\">\n</head>\n<body>\n";
+}
+
+/*
+ * name: writeSize
+ * description: writes webpage size to CSS
+ * input: ofstream &
+ * output: none
+ */
+void HTML :: writeSize(ofstream & css){
+    css << "body{\n" << root -> style 
+        << "\twidth: " << root -> W()
+        << "vw;\n\theight: " << root -> H()
+        << "vw;\n}\n";
+}
+
+/*
+ * name: helper
+ * description: write helper
+ * input: same as write
+ * output: none
+ */
+void HTML :: helper(ofstream & html, ofstream & css, 
+    Tag * current, string tabs){
+
     html << tabs << current -> openTag();
-    if(current -> name != "div" && current -> name != "body"){
-        html << tabs << "\t" << current -> name << "; " << current -> id << endl;
+    //write id(CHANGE TO ACTUAL CONTENT) except for wrappers
+    if(current -> cls != "wrap"){
+        html << tabs << "\t" << current -> id << endl;
     }
+    //write style
     if(current -> style != ""){
         css << "#" << current -> id << "{\n" << current -> style
             << "\twidth: " << current -> wPct
-            << (current -> name == "body" ? "vw" : "%")
-            << ";\n\theight: " << current -> hPct 
-            << (current -> name == "body" ? "vw" : "%") 
-            << ";\n}\n\n";
+            << "%;\n\theight: " << current -> hPct  
+            << "%;\n}\n\n";
     }
+    //running DFS for the html structure
     for(Tag * t : current -> children){
-        helper(html, css, t, tabCount + 1);
+        helper(html, css, t, tabs + "\t");
     }
     html << tabs << current -> closeTag();
 }
+
+//eof

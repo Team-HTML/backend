@@ -1,4 +1,19 @@
+
 //Dongyao Zhu
+
+/*
+(0, 0)                   X
+  |---------------------->
+  | top left 
+  |   ____________________
+  |  |                    |
+  |  |                    |
+  |  |                    |
+  |  |____________________|
+  |                   bottom right
+Y v
+
+*/
 
 #ifndef TAG_HPP
 #define TAG_HPP
@@ -8,13 +23,6 @@
 #include <vector>
 #include <queue>
 #include <map>
-#define ABOVE 0
-#define BELOW 1
-#define LEFT 2
-#define RIGHT 3
-#define SUB 4
-#define SUPER 5
-#define OVERLAP 7
 
 using namespace std;
 
@@ -28,12 +36,10 @@ class Tag{
         string style;
         string id;
         Tag * parent;
-        //.first is along y axis(positive to bottom),
-        //.second is along x axis(positive to right).
-        pair<double, double> tl;//abs topleft coordinate to screen in %
-        pair<double, double> br;//abs bottom right coordinate to screen in %
-        double wPct;//relative width % (to parent), 0 - 100(no %)
-        double hPct;//relative height % (to parent), 0 - 100(no %)
+        pair<double, double> tl;//abs topleft coordinates on page (no %)
+        pair<double, double> br;//abs bottom right coordinates on page (no %)
+        double wPct;//relative width % (to parent), 0 to 100(no %)
+        double hPct;//relative height % (to parent), 0 to 100(no %)
         vector<Tag *> children;
         
     public:
@@ -50,69 +56,31 @@ class Tag{
 
         friend class HTML;
 
-        //constructor for actual tags ONLY
         Tag(double tly, double tlx, double bry, double brx,
-            string name, string cls = "", string url = "", string style = "") 
-            : name(name), cls(cls), url(url), style(style){
-                this -> style = "\tposition: relative;\n" + this -> style;
-                id = name + to_string(++count[name]);
-                tl = make_pair<double, double>((double)tly, (double)tlx);
-                br = make_pair<double, double>((double)bry, (double)brx);
-                wPct = W();
-                hPct = H();
-                cout << id << ": new at " << this << endl;
-        }
+            string name, string url, string style);
 
-        //constructor for wrapper ONLY
-        Tag(double tly, double tlx, double bry, double brx,
-            Tag * a, Tag * b) : name("div"){
-                tl = make_pair<double, double>((double)tly, (double)tlx);
-                br = make_pair<double, double>((double)bry, (double)brx);
-                id = "wrap" + to_string(++count["wrap"]);
-                children.push_back(a);
-                a -> parent = this;
-                a -> wPct = 100 * a -> W() / W();
-                a -> hPct = 100 * a -> H() / H();
-                wPct = W();
-                hPct = H();
-                if(b){
-                    children.push_back(b);
-                    b -> parent = this;
-                    b -> wPct = 100 * b -> W() / W();
-                    b -> hPct = 100 * b -> H() / H();
-                }
-                style = "\tposition: relative;\n";
-                cout << id << ": new at " << this << endl;
-        }
+        Tag(double tly, double tlx, double bry, double brx, Tag * a, Tag * b);
 
-        ~Tag(){
-            cout << "~t " << *this << endl;
-            if(id.find("wrap") != string :: npos){
-                count["wrap"]--;
-            }else{
-                count[name]--;
-            }
-            for(Tag * t : children){
-                delete t;
-            }
-        }
+        ~Tag();
 
         bool operator < (Tag & t);
-        int relation(Tag * t);
 
         Tag * expandRow(Tag * next);
-        //Tag * expandCol(double maxCol);
-        //Tag * expand(Tag * next);
         static Tag * wrap(Tag * a, Tag * b);
 
-        double S();//size
-        double W();//width
-        double H();//height
-        Tag * P();//parent
-        
         string openTag();
         string closeTag();
-        operator char *() const;//idk, might be useful later
+
+        const double topLeftY();
+        const double topLeftX();
+        const double botRightY();
+        const double botRightX();
+
+        double S();
+        double W();
+        double H();
+        Tag * P();
+
 };
 
 inline ostream & operator << (ostream & os, Tag & t) {

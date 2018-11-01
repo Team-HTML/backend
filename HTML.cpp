@@ -18,7 +18,8 @@ HTML :: HTML(double width, double height,
     double last = 0;
     //while all not finished
     while(!tags.empty()){
-        Tag * current = tags.top();
+    	//the reference tag that holds (each) row
+        Tag * reference = tags.top();
         //this pq will store all tags in this row
         priority_queue<Tag *, vector<Tag *>, sortS> row;
         tags.pop();
@@ -26,17 +27,17 @@ HTML :: HTML(double width, double height,
         while(!tags.empty()){
             Tag * next = tags.top();
             //next is below(it is in next row), moving to next row
-            if(current -> botRightY() <= next -> topLeftY()){
+            if(reference -> botRightY() <= next -> topLeftY()){
                 break;
             }else{
                 //valid relations: next tag is NOT BELOW reference, which
                 //may need to include more rows if next protrudes downwards
-                current = current -> expandRow(next);
+                reference = reference -> expandRow(next);
                 row.push(next);
                 tags.pop(); 
             }
         }//end of while
-        row.push(current);
+        row.push(reference);
         //wrap row elements 2 by 2 then push back, think of huffman encoding
         //note: not really necessary, but will make html structure more clear
         while(row.size() > 1){

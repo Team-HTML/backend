@@ -28,7 +28,8 @@ Tag :: Tag(double tly, double tlx, double bry, double brx,
 /*
  * name: constructor
  * description: creates a wrapper Tag
- * input: Tag's information
+ * input: information of Tags to be wrapped; if only one Tag,
+        it is for expanding row.
  * output: Tag *
  */
 Tag :: Tag(double tly, double tlx, double bry, double brx,

@@ -96,6 +96,13 @@ bool HTML :: write(string pathHTML, string pathCSS){
     return true;
 }
 
+/*
+ * name: addStyle
+ * description: for using multiple css files
+        call multiple times to add more
+ * input: another css file path
+ * output: none
+ */
 void HTML :: addStyle(string pathCSS){
     moreCSS += "\t<link rel=\"stylesheet\" type=\"text/css\" href=\"" + 
         pathCSS + "\">\n";

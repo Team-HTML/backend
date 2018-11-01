@@ -83,11 +83,14 @@ class Tag{
 
 };
 
+//for debug
 inline ostream & operator << (ostream & os, Tag & t) {
-    os << "[n:" << t.name << " i:" << t.id << " (" << t.tl.first << "," 
-    << t.tl.second << ")(" << t.br.first << "," << t.br.second << ")"
+    os << "[n:" << t.name << " i:" << t.id 
+    << " (" << t.topLeftY() << "," << t.topLeftX() << ")(" 
+    << t.botRightY() << "," << t.botRightX() << ")"
     << " h:" << t.H() << " sz:" << t.S() 
-    << " p:" << (t.P()?t.P()->name:"n/a") << " #:" << to_string(t.children.size()) << "]";
+    << " p:" << (t.P() ? t.P()->name : "n/a") 
+    << " #:" << to_string(t.children.size()) << "]";
     return os;
 }
 
@@ -95,9 +98,9 @@ inline ostream & operator << (ostream & os, Tag & t) {
 class sortC{
     public:
         bool operator() (Tag * i, Tag * j){ 
-            return i -> tl.first > j -> tl.first ? true:
-                i -> tl.first < j -> tl.first ? false:
-                i -> tl.second > j -> tl.second ? true: false;
+            return i -> topLeftY() > j -> topLeftY() ? true:
+                i -> topLeftY() < j -> topLeftY() ? false:
+                i -> topLeftX() > j -> topLeftX() ? true: false;
         }
 };
 

@@ -93,7 +93,7 @@ Tag * Tag :: expandRow(Tag * t){
     //t is too long in y axis
     if(t -> botRightY() > botRightY()){ 
         return new Tag
-            (topLeftY(), topLeftX(), t -> botRightY(), botRightY(), this, 0);
+            (topLeftY(), topLeftX(), t -> botRightY(), botRightX(), this, 0);
     }
     return this;
 }

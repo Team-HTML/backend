@@ -22,6 +22,16 @@ Tag.cpp
     webpage. Refer to the files for more information on coordinates.
 ****************************************************************************
 
+version 1.2
+
+    from 1.1:
+        
+        rewritten in python, as requested by server team
+        redesigned structure, since parser is no longer needed
+            HTML now takes in raw list of tags
+            HTML now calls makeTree in constructor
+        TODO: error tolerance in __lt__ of Tag
+
 version 1.1
 
     from 1:

@@ -10,13 +10,13 @@ class HTML():
 		self.header = ('<!DOCTYPE html>\n<html>\n'
 			'<head>\n\t<meta name = \"viewport\" content = \"'
 			'width = device-width, initial-scale = 1, '
-			'maximum-scale = 1.0, user-scalable = 0\"/>\n')
-		self.css = '\t<link rel=\"stylesheet\" type=\"text/css\" href=\"'
-		self.moreCSS = ''
+			'maximum-scale = 1.0, user-scalable = 0\"/>\n\t'
+			'<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"/>')
 		self.root = Tag(0, 0, width, height, 'body', \
 			'\tbackground-color: #293030;\n')
 		self.last = 0
 		self.makeTree(raw)
+		self.final = ''
 
 	'''
 	builds the HTML tree structure from the tags
@@ -53,33 +53,34 @@ class HTML():
 				self.root.children.append(t)
 
 	#generate HTML and CSS source code from html structure tree, DFS
-	def write(self, htmlPath, cssPath):
-		html = open(htmlPath, 'w')
-		css = open(cssPath, 'w')
-		html.write(self.header + self.moreCSS + self.css + cssPath + \
-			'">\n</head>\n<body>\n')
-		css.write('body{\n' + self.root.style + \
+	def write(self, htmlPath):
+		self.final += self.header + '\n<style>\n'
+		self.final += 'body{\n' + self.root.style + \
 			'\twidth: ' + str(self.root.W) + 'vw;\n\theight: ' + \
-			str(self.root.H) + 'vw;\n}\n')
-		tab = '\t'
+			str(self.root.H) + 'vw;\n}\n'
+		htmlBody, inlineCSS, tab = [], [], '\t'
 		#dfs
 		for t in self.root.children:
-			HTML.helper(html, css, t, tab);
-		html.write('</body>\n</html>\n')
-		html.close();
-		css.close();
+			HTML.helper(htmlBody, inlineCSS, t, tab);
+		self.final += ''.join(inlineCSS)
+		self.final += '</style>\n</head>\n<body>\n'
+		self.final += ''.join(htmlBody)
+		self.final += ('</body>\n</html>\n')
+		writeHTML = open(htmlPath, 'w')
+		writeHTML.write(self.final);
+		writeHTML.close()
 
 	#write helper
-	def helper(html, css, t, tabs):
-		html.write(tabs + t.openTag())
-		if t.cls != 'wrap':
-			html.write(tabs + '\t' + t.id + '\n')
+	def helper(htmlBody, inlineCSS, t, tabs):
+		htmlBody.append(tabs + t.openTag())
+		if t.name == 'p':
+			htmlBody.append(tabs + '\tLorem ipsum\n')
 		if t.style != '':
-			css.write('#' + t.id + '{\n' + t.style + '\twidth: ' + str(t.wPct)
-				+ '%;\n\theight: ' + str(t.hPct) + '%;\n}\n\n')
+			inlineCSS.append('#' + t.id + '{\n' + t.style + '\twidth: ' \
+				+ str(t.wPct) + '%;\n\theight: ' + str(t.hPct) + '%;\n}\n')
 		for sub in t.children:
-			HTML.helper(html, css, sub, tabs + '\t')
-		html.write(tabs + t.closeTag())
+			HTML.helper(htmlBody, inlineCSS, sub, tabs + '\t')
+		htmlBody.append(tabs + t.closeTag())
 
 	#for using multiple css files call multiple times to add more
 	def addStyle(cssPath):

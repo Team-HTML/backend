@@ -53,7 +53,7 @@ class HTML():
 				self.root.children.append(t)
 
 	#generate HTML and CSS source code from html structure tree, DFS
-	def toHTML(self, htmlPath):
+	def toHTML(self):
 		self.final += self.header + '\n<style>\n'
 		self.final += 'body{\n' + self.root.style + \
 			'\twidth: ' + str(self.root.W) + 'vw;\n\theight: ' + \

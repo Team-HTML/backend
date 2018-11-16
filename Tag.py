@@ -32,7 +32,7 @@ class Tag:
 			self.wPct = self.W
 			self.yPct = self.H
 			if name == "p":
-				self.style += "\tmargin: 0%;\n"
+				self.style += "\tmargin: 0%;\n\toverflow: scroll;\n"
 		#creates a wrapper Tag
 		else:
 			Tag.count['wrap'] += 1

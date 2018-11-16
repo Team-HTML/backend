@@ -53,7 +53,7 @@ class HTML():
 				self.root.children.append(t)
 
 	#generate HTML and CSS source code from html structure tree, DFS
-	def write(self, htmlPath):
+	def toHTML(self, htmlPath):
 		self.final += self.header + '\n<style>\n'
 		self.final += 'body{\n' + self.root.style + \
 			'\twidth: ' + str(self.root.W) + 'vw;\n\theight: ' + \
@@ -66,15 +66,14 @@ class HTML():
 		self.final += '</style>\n</head>\n<body>\n'
 		self.final += ''.join(htmlBody)
 		self.final += ('</body>\n</html>\n')
-		writeHTML = open(htmlPath, 'w')
-		writeHTML.write(self.final);
-		writeHTML.close()
+		return self.final
 
 	#write helper
 	def helper(htmlBody, inlineCSS, t, tabs):
 		htmlBody.append(tabs + t.openTag())
 		if t.name == 'p':
-			htmlBody.append(tabs + '\tLorem ipsum\n')
+			htmlBody.append(tabs + ('\tLorem ipsum dolor sit amet, pri nostrud'
+				' scaevola at, ex agam habeo assueverit mei.\n'))
 		if t.style != '':
 			inlineCSS.append('#' + t.id + '{\n' + t.style + '\twidth: ' \
 				+ str(t.wPct) + '%;\n\theight: ' + str(t.hPct) + '%;\n}\n')
@@ -82,7 +81,4 @@ class HTML():
 			HTML.helper(htmlBody, inlineCSS, sub, tabs + '\t')
 		htmlBody.append(tabs + t.closeTag())
 
-	#for using multiple css files call multiple times to add more
-	def addStyle(cssPath):
-		moreCSS += self.css + cssPath + '\">\n'
 

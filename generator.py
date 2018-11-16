@@ -3,45 +3,19 @@
 
 from HTML import HTML
 from Tag import Tag
+import myDetect as detector
 
-#raw = cut_predict(...), then pass it to html
+def toHTML(pic):
 
-raw = []
-raw.append(Tag(10, 10, 40, 90, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(60, 10, 90, 40, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(60, 60, 70, 90, 'p', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(80, 60, 90, 90, 'p', '\tborder: 2px solid white;\n', ''))
-html = HTML(100, 100, raw)
-html.write('test1.html')
+	img = detector.readImg(pic)
+	img_processed = detector.preprocess(img)
+	img_contour = detector.contour(img_processed)#blank or img_processed
 
-raw.append(Tag(20, 40, 80, 60, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(40, 10, 60, 30, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(40, 70, 60, 90, 'div', '\tborder: 2px solid white;\n', ''))
-html = HTML(100, 100, raw)
-html.write('test2.html')
+	img_rect = detector.rect_to_cut(img_contour, img.shape[0] * img.shape[1])
+	raw = detector.cut_predict(img_processed, img_rect, 1)
 
-raw.append(Tag(10, 10, 60, 40, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(40, 60, 90, 90, 'div', '\tborder: 2px solid white;\n', ''))
-html = HTML(100, 100, raw)
-html.write('test3.html')
+	html = HTML(100, 100 * img.shape[0] / img.shape[1], raw)
+	return html.toHTML()
 
-raw.append(Tag(10, 10, 40, 90, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(15, 20, 20, 80, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(25, 20, 30, 80, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(60, 10, 70, 40, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(50, 20, 80, 30, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(50, 60, 60, 80, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(50, 80, 70, 90, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(70, 70, 80, 90, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(60, 60, 80, 70, 'div', '\tborder: 2px solid white;\n', ''))
-
-html = HTML(100, 100, raw)
-html.write('test4.html')
-
-raw.append(Tag(10, 10, 15, 90, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(26, 10, 40, 90, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(60, 10, 85, 90, 'div', '\tborder: 2px solid white;\n', ''))
-raw.append(Tag(90, 10, 95, 90, 'div', '\tborder: 2px solid white;\n', ''))
-
-html = HTML(100, 100, raw)
-html.write('test5.html')
+f = open("test.html", 'w')
+f.write(toHTML("test3.jpg"))

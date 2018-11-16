@@ -10,7 +10,6 @@ def toHTML(pic):
 	raw.append(Tag(60, 60, 70, 90, 'p', '\tborder: 2px solid white;\n', ''))
 	raw.append(Tag(80, 60, 90, 90, 'div', '\tborder: 2px solid white;\n', ''))
 	html = HTML(100, 100, raw)
-	html = HTML(100, 100, raw)
 	return html.toHTML()
 
 # raw.append(Tag(20, 40, 80, 60, 'div', '\tborder: 2px solid white;\n', ''))

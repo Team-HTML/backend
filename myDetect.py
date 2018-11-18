@@ -99,7 +99,7 @@ def cut_predict(img, real, num):
 def ml_cut_predict(img, real, num):
   data = []
   d = 0
-
+  height, width, _ = img.shape
   top_pick = ''
   for x,y,w,h in real:
     top_pick = 'garbage'
@@ -141,8 +141,11 @@ def ml_cut_predict(img, real, num):
     maxId = process_prediction(top_pick)
     if maxId == 'not a tag':
       continue
-
-    data.append([x, y, x+w, y+h, maxId])
+    new_x = x * 100.0 / width
+    new_y = y * 100.0 / height
+    new_w = (x+w) * 100.0 / width
+    new_h = (y+h) * 100.0 / height
+    data.append([new_x, new_y, new_w, new_h, maxId])
     d += 1
   return data
 

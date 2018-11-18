@@ -81,17 +81,17 @@ class Tag:
 		#horizontal adjustment
 		ax = 100 * (a.tlx - t.tlx) / t.W
 		if ax > 0:
-			a.style += '\tleft: ' + str(ax) + 'vw;\n'
+			a.style += '\tleft: ' + str(ax) + '%;\n'
 		bx = 100 * (b.tlx - t.tlx) / t.W
 		if bx > 0:
-			b.style += '\tleft: ' + str(bx) + 'vw;\n'
+			b.style += '\tleft: ' + str(bx) + '%;\n'
 		#vertical adjustment
 		ay = 100 * (a.tly - t.tly) / t.H
 		if ay > 0:
-			a.style += '\ttop: ' + str(ay) + 'vh;\n'
+			a.style += '\ttop: ' + str(ay) + '%;\n'
 		by = 100 * (b.tly - t.tly - a.H) / t.H
 		if by != 0:
-			b.style += '\ttop: ' + str(by) + 'vh;\n'
+			b.style += '\ttop: ' + str(by) + '%;\n'
 		return t
 
 	#returns opening tag to be written in html file

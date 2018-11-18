@@ -47,8 +47,8 @@ class HTML():
 			if len(row) == 1:
 				t = heappop(row)
 				moveY = t.tly - self.last
-				t.style += '\ttop: ' + str(moveY) + 'vh;\n'
-				t.style += '\tleft: ' + str(t.tlx) + 'vw;\n'
+				t.style += '\ttop: ' + str(moveY) + '%;\n'
+				t.style += '\tleft: ' + str(t.tlx) + '%;\n'
 				#total vertical adjustments
 				self.last = t.bry - moveY if moveY > 0 else 0
 				self.root.children.append(t)
@@ -85,7 +85,7 @@ class HTML():
 				' scaevola at, ex agam habeo assueverit mei.\n'))
 		if t.style != '':
 			inlineCSS.append('#' + t.id + '{\n' + t.style + '\twidth: ' \
-				+ str(t.wPct) + 'vw;\n\theight: ' + str(t.hPct) + 'vh;\n}\n')
+				+ str(t.wPct) + '%;\n\theight: ' + str(t.hPct) + '%;\n}\n')
 		for sub in t.children:
 			HTML.helper(htmlBody, inlineCSS, sub, tabs + '\t')
 		htmlBody.append(tabs + t.closeTag())

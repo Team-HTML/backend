@@ -26,7 +26,7 @@ class HTML():
     '''
 	def makeTree(self, tags):
 		heapify(tags)
-		while len(tags) > 1:
+		while len(tags) > 0:
 			reference = heappop(tags)
 			row = []
 			#get row
@@ -57,7 +57,7 @@ class HTML():
 	def toHTML(self):
 		self.final += self.header + '\n<style>\n'
 		self.final += 'body{\n' + self.root.style + \
-			'\twidth: 100vw;\n\theight: 100vh;\n}\n'
+			'\twidth: 100vw;\n\theight: 100vw;\n}\n'
 		htmlBody, inlineCSS, tab = [], [], '\t'
 		#dfs
 		for t in self.root.children:
@@ -71,7 +71,7 @@ class HTML():
 	#write helper
 	def helper(htmlBody, inlineCSS, t, tabs):
 		htmlBody.append(tabs + t.openTag())
-		if t.name == 'p':
+		if t.name == 'p' or t.name[0] == 'h':
 			htmlBody.append(tabs + ('\tLorem ipsum dolor sit amet, pri nostrud'
 				' scaevola at, ex agam habeo assueverit mei.\n'))
 		if t.style != '':

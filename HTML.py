@@ -74,9 +74,18 @@ class HTML():
 		if t.name == 'p':
 			htmlBody.append(tabs + ('\tLorem ipsum dolor sit amet, pri nostrud'
 				' scaevola at, ex agam habeo assueverit mei.\n'))
+		if t.name == 'h1':
+			htmlBody.append(tabs + ('\tLorem ipsum dolor sit amet, pri nostrud'
+				' scaevola at, ex agam habeo assueverit mei.\n'))
+		if t.name == 'h2':
+			htmlBody.append(tabs + ('\tLorem ipsum dolor sit amet, pri nostrud'
+				' scaevola at, ex agam habeo assueverit mei.\n'))
+		if t.name == 'h3':
+			htmlBody.append(tabs + ('\tLorem ipsum dolor sit amet, pri nostrud'
+				' scaevola at, ex agam habeo assueverit mei.\n'))
 		if t.style != '':
 			inlineCSS.append('#' + t.id + '{\n' + t.style + '\twidth: ' \
-				+ str(t.wPct) + '%;\n\theight: ' + str(t.hPct) + '%;\n}\n')
+				+ str(t.wPct) + 'vw;\n\theight: ' + str(t.hPct) + 'vh;\n}\n')
 		for sub in t.children:
 			HTML.helper(htmlBody, inlineCSS, sub, tabs + '\t')
 		htmlBody.append(tabs + t.closeTag())

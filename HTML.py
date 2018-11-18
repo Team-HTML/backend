@@ -6,15 +6,16 @@ from heapq import heappush, heappop, heapify
 
 class HTML():
 
-	def __init__(self, width, height, raw):
+	def __init__(self, raw):
 		self.header = ('<!DOCTYPE html>\n<html>\n'
 			'<head>\n\t<meta name = \"viewport\" content = \"'
 			'width = device-width, initial-scale = 1, '
 			'maximum-scale = 1.0, user-scalable = 0\"/>\n\t'
 			'<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"/>')
-		self.root = Tag(0, 0, width, height, 'body', \
+		self.root = Tag(0, 0, 100, 100, 'body', \
 			'\tbackground-color: #293030;\n')
 		self.last = 0
+		raw = [Tag(i[0], i[1], i[2], i[3], i[4]) for i in raw]
 		self.makeTree(raw)
 		self.final = ''
 
@@ -31,7 +32,7 @@ class HTML():
 			#get row
 			while len(tags) > 0:
 				neighbour = tags[0];
-				if(reference.bry <= neighbour.tly):
+				if reference.bry <= neighbour.tly:
 					break
 				else:
 					reference = reference.expandRow(neighbour)
@@ -56,8 +57,7 @@ class HTML():
 	def toHTML(self):
 		self.final += self.header + '\n<style>\n'
 		self.final += 'body{\n' + self.root.style + \
-			'\twidth: ' + str(self.root.W) + 'vw;\n\theight: ' + \
-			str(self.root.H) + 'vw;\n}\n'
+			'\twidth: 100vw;\n\theight: 100vh;\n}\n'
 		htmlBody, inlineCSS, tab = [], [], '\t'
 		#dfs
 		for t in self.root.children:

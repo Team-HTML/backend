@@ -31,8 +31,10 @@ class Tag:
 				self.id = name + '1'
 			self.wPct = self.W
 			self.hPct = self.H
-			if name == "p":
-				self.style += "\tmargin: 0%;\n\toverflow: scroll;\n"
+			if name == 'p' or name[0] == 'h':
+				self.style += "\tmargin: 0%;\n\tpadding: 1px;\n"
+				self.style += "\toverflow: scroll;\n\tcolor: white;\n"
+				self.style += "\tborder: 1px white dashed;\n"
 		#creates a wrapper Tag
 		else:
 			Tag.count['wrap'] += 1
@@ -50,8 +52,12 @@ class Tag:
 				
 	#comparison for priority queue
 	def __lt__(self, t):
-		return True if self.tly > t.tly else False if self.tly < t.tly \
-			else True if self.H < t.H else False
+		return True if self.tly < t.tly else False if self.tly > t.tly \
+			else True if self.H > t.H else False
+
+	def __str__(self):
+		return self.name + ' - '  + self.id + ' - ' + self.cls + ': ' + str(self.tlx)\
+			 + str(self.tly//1) + ', ' + str(self.brx//1) + ', ' + str(self.bry//1)
 
 	'''
 	if t protrudes downwards, this tag will be wrapped with one 

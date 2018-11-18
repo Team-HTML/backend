@@ -30,9 +30,9 @@ class Tag:
 				Tag.count[name] = 1
 				self.id = name + '1'
 			self.wPct = self.W
-			self.yPct = self.H
+			self.hPct = self.H
 			if name == "p":
-				self.style += "\tmargin: 0%;\n\toverflow: scroll;\n"
+				self.style += "\tmargin: 0%;\n\toverflow: scroll;\n\tfont-color:white;\n"
 		#creates a wrapper Tag
 		else:
 			Tag.count['wrap'] += 1

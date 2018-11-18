@@ -101,10 +101,9 @@ def ml_cut_predict(img, real, num):
   d = 0
 
   top_pick = ''
-
   for x,y,w,h in real:
     top_pick = 'garbage'
-
+    print("rect: "+str(x)+" "+str(y)+" "+str(w)+" "+str(h))
     #predict content of each rectangle
     image_cut = img.copy()
     crop_img = img[y:y+h, x:x+w]
@@ -142,7 +141,8 @@ def ml_cut_predict(img, real, num):
     maxId = process_prediction(top_pick)
     if maxId == 'not a tag':
       continue
-    data.append([x, y, x + w, y + h, maxId])
+
+    data.append([x, y, x+w, y+h, maxId])
     d += 1
   return data
 

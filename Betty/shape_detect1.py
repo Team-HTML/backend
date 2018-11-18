@@ -2,14 +2,25 @@ import cv2
 import numpy as np
 #import scan 
 import os
-import myclarifai as nn
+#import myclarifai as nn
 import json
+
+import sys
+import tensorflow as tf
+
+os.environ['TF_CPP_MIN_LOG_LEVEL'] = '2'
 
 #empty canvas to display rectangles on
 
 #image to test
 #img = cv2.imread('DRAWINGS/1.PNG')
 #ori = img.copy()
+
+def readImg(pic):
+  img = cv2.imread(pic)
+  #too big for my screen
+  img = cv2.resize(img, (img.shape[0]//3, img.shape[1]//3))
+  return img
 
 def preprocess(img):
   #small2 = cv2.resize(img, (0,0), fx=0.2, fy=0.2)
@@ -129,6 +140,69 @@ def cut_predict(img, real, num, white):
   with open('data.json','w') as outfile:
     json.dump(data, outfile,indent=2)
 
+def ml_cut_predict(img, real, num, white): 
+  d = 0 
+  data = {}
+  top_pick = ''
+  for rect in real:
+    top_pick = 'garbage'
+    x,y,w,h = rect
+    area = w * h
+    if area > 5000:
+      print(" " + str(x) + " " + str(y) + " " + str(w) + " " + str(h))
+      cv2.rectangle(white, (x, y), (x+w, y+h), (255,0,0), 6)
+      #Rect rect(x,y,w,h)
+      image_cut = img.copy()
+      crop_img = img[y:y+h, x:x+w]
+      target = "pic" + str(num) + "_" + str(d) +".jpg"
+      cv2.imwrite(target, crop_img)
+      
+      # change this as you see fit
+      image_path = target
+
+      # Read in the image_data
+      image_data = tf.gfile.FastGFile(image_path, 'rb').read()
+
+      # Loads label file, strips off carriage return
+      label_lines = [line.rstrip() for line 
+                         in tf.gfile.GFile("tf_model/retrained_labels.txt")]
+
+      # Unpersists graph from file
+      with tf.gfile.FastGFile("tf_model/retrained_graph.pb", 'rb') as f:
+        graph_def = tf.GraphDef()
+        graph_def.ParseFromString(f.read())
+        tf.import_graph_def(graph_def, name='')
+
+      with tf.Session() as sess:
+        # Feed the image_data as input to the graph and get first prediction
+        softmax_tensor = sess.graph.get_tensor_by_name('final_result:0')
+        
+        predictions = sess.run(softmax_tensor, \
+                 {'DecodeJpeg/contents:0': image_data})
+        
+        # Sort to show labels of first prediction in order of confidence
+        top_k = predictions[0].argsort()[-len(predictions[0]):][::-1]
+        
+        top_pick = label_lines[top_k[0]]
+
+      maxId = process_prediction(top_pick)
+      if maxId == 'not a tag':
+        continue
+
+      data[str(d)] = []
+      data[str(d)].append({
+        'x': x,
+        'y':y,
+        'width':w,
+        'height':h,
+        'kind':maxId,
+      })
+      d = d + 1
+  with open('data.json','w') as outfile:
+    json.dump(data, outfile,indent=2)
+  return data
+
+
 #small = cv2.resize(white, (0,0), fx=0.2, fy=0.2)
 #small2 = cv2.resize(img, (0,0), fx=0.2, fy=0.2)
 
@@ -137,3 +211,20 @@ def cut_predict(img, real, num, white):
 #k = cv2.waitKey(10000) # 0==wait forever
 
 #cv2.destroyAllWindows()
+
+def process_prediction(pick):
+  print('pick found: '+pick)
+  if pick == 'image':
+    return 'img'
+  elif pick == 'h1':
+    return 'h1'
+  elif pick == 'h2':
+    return 'h2'
+  elif pick == 'h3':
+    return 'h3'
+  elif pick == 'paragraph':
+    return 'p'
+  elif pick == 'button':
+    return 'button'
+  else:
+    return 'not a tag'

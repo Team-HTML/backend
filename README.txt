@@ -24,6 +24,15 @@ Tag.py
 Deprecated: HTML.cpp, Tag.cpp, test.cpp
 ****************************************************************************
 
+version 1.4
+
+    from 1.3:
+
+        generator.py can now handle marginal errors in coordinates given
+        by ML prediction, with custom level of error tolerance and custom
+        level of adjustment.
+
+
 version 1.3
 
     from 1.2:
@@ -36,7 +45,7 @@ version 1.3
         stored in a string to be written at once, instead of writting 
         part by part, for the sake of better i/o efficiency
 
-        paragraphs now show a defaul text
+        paragraphs now show a default text
 
         TODO: error tolerance in __lt__ of Tag
 

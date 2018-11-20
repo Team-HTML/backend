@@ -1,8 +1,22 @@
 
 #Dongyao Zhu
 
+'''
+(0, 0)                   X
+  |---------------------->
+  | top left 
+  |   ____________________
+  |  |                    |
+  |  |                    |
+  |  |                    |
+  |  |____________________|
+  |                   bottom right
+Y v
+'''
+
 class Tag:
 
+    #name counter
 	count = {'wrap' : 0}
 
 	def __init__(self, tlx = 0, tly = 0, brx = 0, bry = 0, name = 'div', \

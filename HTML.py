@@ -20,7 +20,7 @@ class HTML():
 		self.final = ''
 
 	'''
-	builds the HTML tree structure from the tags
+    builds the HTML tree structure from the tags
     row by row, each row determined by a reference tag that 
     starts most topleft and spans most row.
     '''
@@ -59,7 +59,7 @@ class HTML():
 		self.final += 'body{\n' + self.root.style + \
 			'\twidth: 100vw;\n\theight: 100vw;\n}\n'
 		htmlBody, inlineCSS, tab = [], [], '\t'
-		#dfs
+		#dfs, will break if using python2
 		for t in self.root.children:
 			HTML.helper(htmlBody, inlineCSS, t, tab);
 		self.final += ''.join(inlineCSS)
@@ -80,5 +80,4 @@ class HTML():
 		for sub in t.children:
 			HTML.helper(htmlBody, inlineCSS, sub, tabs + '\t')
 		htmlBody.append(tabs + t.closeTag())
-
 

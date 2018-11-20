@@ -3,13 +3,16 @@
 
 from HTML import HTML
 from Tag import Tag
-# from Betty import shape_detect1 as detector
-# import numpy as np
 
-# aligns coordinates close to each other together
-# errorToleranceLevel: difference of 2 x / y coordinates that could be 
-#		tolerated, in percentage wrt to page size(height or width)
-# adjustLevel: how much to move each box by the average difference
+'''
+    description: aligns coordinates close to each other together
+    inputs: 
+        errorToleranceLevel: default = 0.05, from 0 to 1
+            difference of 2 coordinates on a same axis
+            that could be tolerated, in percentage wrt to axis length.
+        adjustLevel: default = 1, from 0 to 1
+            how much to adjust each box by the average difference
+'''
 def align(raw, errorToleranceLevel, adjustLevel):
 	allAxes = [[], []]
 	for t in raw:
@@ -21,25 +24,33 @@ def align(raw, errorToleranceLevel, adjustLevel):
 		oneAxis.sort(key = lambda tup: tup[0])
 		i = 0
 		refValue, refTag, refIndex = oneAxis[i]
-		similar = [oneAxis[i]]
+		close = [oneAxis[i]]
 		while i + 1 < len(oneAxis):
 			i += 1
 			nextValue, nextTag, nextIndex = oneAxis[i]
 			if abs(nextValue - refValue) / 100 > errorToleranceLevel:
-				average(similar, adjustLevel)
+				adjust(close, adjustLevel)
 				refValue, refTag, refIndex = oneAxis[i]
-				similar = [oneAxis[i]]
+				close = [oneAxis[i]]
 			else:	
-				similar.append(oneAxis[i])
-				if i + 1 == len(oneAxis) and len(similar) > 1:
-					average(similar, adjustLevel)
+				close.append(oneAxis[i])
+				if i + 1 == len(oneAxis) and len(close) > 1:
+					adjust(close, adjustLevel)
 				continue
 
-def average(similar, adjustLevel):
-	avg = sum([sim[0] for sim in similar]) / len(similar)
-	for value, t, index in similar:
+'''
+    description: moves boxes with close coordinates on same axis together
+    input:
+        adjustLevel: how much to adjust each box by the average difference
+'''
+def adjust(close, adjustLevel):
+	avg = sum([sim[0] for sim in close]) / len(close)
+	for value, t, index in close:
 		t[index] += (avg - value) * adjustLevel
 
+'''
+    description: call ML functions; use that output to generate HTML for lambda
+'''
 def toHTML(pic, errorToleranceLevel = 0.05, adjustLevel = 1.0):
 	# img = detector.readImg(pic)
 	# img_processed = detector.preprocess(img)
@@ -58,7 +69,7 @@ raw = []
 raw.append([10.83, 70.83, 76.25, 100, 'h2'])
 raw.append([12.92, 39.58, 65.83, 70, 'img'])
 raw.append([10.42, 5.83, 57.50, 38.75, 'img'])
-f = open('aligned.html', 'w')
-f.write(toHTML(1))#replace 1 with some pic
-f.close()
+#f = open('aligned.html', 'w')
+#f.write(toHTML(1))#replace 1 with some pic
+#f.close()
 ##################---test---#######################

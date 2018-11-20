@@ -55,9 +55,11 @@ class Tag:
 		return True if self.tly < t.tly else False if self.tly > t.tly \
 			else True if self.H > t.H else False
 
+	#for debug
 	def __str__(self):
-		return self.name + ' - '  + self.id + ' - ' + self.cls + ': ' + str(self.tlx)\
-			 + str(self.tly//1) + ', ' + str(self.brx//1) + ', ' + str(self.bry//1)
+		return self.name + ' - '  + self.id + ' - ' + self.cls + ': ' + \
+			str(self.tlx // 1) + ', ' + str(self.tly // 1) + ', ' + \
+			str(self.brx // 1) + ', ' + str(self.bry // 1)
 
 	'''
 	if t protrudes downwards, this tag will be wrapped with one 

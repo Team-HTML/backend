@@ -6,32 +6,33 @@ from heapq import heappush, heappop, heapify
 
 class HTML():
 
-	def __init__(self, width, height, raw):
+	def __init__(self, raw):
 		self.header = ('<!DOCTYPE html>\n<html>\n'
 			'<head>\n\t<meta name = \"viewport\" content = \"'
 			'width = device-width, initial-scale = 1, '
 			'maximum-scale = 1.0, user-scalable = 0\"/>\n\t'
 			'<link rel=\"stylesheet\" type=\"text/css\" href=\"style.css\"/>')
-		self.root = Tag(0, 0, width, height, 'body', \
+		self.root = Tag(0, 0, 100, 100, 'body', \
 			'\tbackground-color: #293030;\n')
 		self.last = 0
+		raw = [Tag(i[0], i[1], i[2], i[3], i[4]) for i in raw]
 		self.makeTree(raw)
 		self.final = ''
 
 	'''
-	builds the HTML tree structure from the tags
+    builds the HTML tree structure from the tags
     row by row, each row determined by a reference tag that 
     starts most topleft and spans most row.
     '''
 	def makeTree(self, tags):
 		heapify(tags)
-		while len(tags) > 1:
+		while len(tags) > 0:
 			reference = heappop(tags)
 			row = []
 			#get row
 			while len(tags) > 0:
 				neighbour = tags[0];
-				if(reference.bry <= neighbour.tly):
+				if reference.bry <= neighbour.tly:
 					break
 				else:
 					reference = reference.expandRow(neighbour)
@@ -56,10 +57,9 @@ class HTML():
 	def toHTML(self):
 		self.final += self.header + '\n<style>\n'
 		self.final += 'body{\n' + self.root.style + \
-			'\twidth: ' + str(self.root.W) + 'vw;\n\theight: ' + \
-			str(self.root.H) + 'vw;\n}\n'
+			'\twidth: 100vw;\n\theight: 100vw;\n}\n'
 		htmlBody, inlineCSS, tab = [], [], '\t'
-		#dfs
+		#dfs, will break if using python2
 		for t in self.root.children:
 			HTML.helper(htmlBody, inlineCSS, t, tab);
 		self.final += ''.join(inlineCSS)
@@ -71,7 +71,7 @@ class HTML():
 	#write helper
 	def helper(htmlBody, inlineCSS, t, tabs):
 		htmlBody.append(tabs + t.openTag())
-		if t.name == 'p':
+		if t.name == 'p' or t.name[0] == 'h':
 			htmlBody.append(tabs + ('\tLorem ipsum dolor sit amet, pri nostrud'
 				' scaevola at, ex agam habeo assueverit mei.\n'))
 		if t.style != '':
@@ -80,5 +80,4 @@ class HTML():
 		for sub in t.children:
 			HTML.helper(htmlBody, inlineCSS, sub, tabs + '\t')
 		htmlBody.append(tabs + t.closeTag())
-
 

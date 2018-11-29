@@ -13,11 +13,9 @@ drawBox = np.zeros((img.shape[0], img.shape[1], 1), np.uint8)
 img_processed = detector.preprocess(img)
 img_contour = detector.contour(img_processed)#blank or img_processed
 
-drawCon = drawBox.copy()
-cv2.drawContours(drawCon, img_contour, -1, 255)
-cv2.imshow("ct", drawCon)
+cv2.drawContours(drawBox, img_contour, -1, 255)
+cv2.imshow("ct", drawBox)
 
 img_rect = detector.rect_to_cut(img_contour, img.shape[0] * img.shape[1])
-detector.cut_predict(img_processed, img_rect, 1, drawBox)
-cv2.imshow("db", drawBox)
+detector.cut_predict(img_processed, img_rect, 1)
 cv2.waitKey()

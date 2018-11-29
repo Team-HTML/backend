@@ -80,7 +80,7 @@ def cut_predict(img, real, num):
     crop_img = img[y:y+h, x:x+w]
     target = "pic" + str(num) + "_" + str(d) +".jpg"
     cv2.imwrite(target, crop_img)
-    maxValue, maxId = nn.prediction(target,api_key)
-    data.append([x, y, x + w, y + h, maxId])
+    # maxValue, maxId = nn.prediction(target,api_key)
+    data.append([x, y, x + w, y + h, 'p'])
     d += 1
   return data

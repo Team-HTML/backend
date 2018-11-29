@@ -1,11 +1,25 @@
 
 #Dongyao Zhu
 
+'''
+(0, 0)                   X
+  |---------------------->
+  | top left 
+  |   ____________________
+  |  |                    |
+  |  |                    |
+  |  |                    |
+  |  |____________________|
+  |                   bottom right
+Y v
+'''
+
 class Tag:
 
+    #name counter
 	count = {'wrap' : 0}
 
-	def __init__(self, tly = 0, tlx = 0, bry = 0, brx = 0, name = 'div', \
+	def __init__(self, tlx = 0, tly = 0, brx = 0, bry = 0, name = 'div', \
 		style = '', url = '', wrap = False, a = None, b = None):
 
 		self.tlx = tlx
@@ -30,9 +44,11 @@ class Tag:
 				Tag.count[name] = 1
 				self.id = name + '1'
 			self.wPct = self.W
-			self.yPct = self.H
-			if name == "p":
-				self.style += "\tmargin: 0%;\n\toverflow: scroll;\n"
+			self.hPct = self.H
+			if name == 'p' or name[0] == 'h':
+				self.style += "\tmargin: 0%;\n\tpadding: 1px;\n"
+				self.style += "\toverflow: scroll;\n\tcolor: white;\n"
+				self.style += "\tborder: 1px white dashed;\n"
 		#creates a wrapper Tag
 		else:
 			Tag.count['wrap'] += 1
@@ -50,8 +66,14 @@ class Tag:
 				
 	#comparison for priority queue
 	def __lt__(self, t):
-		return True if self.tly > t.tly else False if self.tly < t.tly \
-			else True if self.H < t.H else False
+		return True if self.tly < t.tly else False if self.tly > t.tly \
+			else True if self.H > t.H else False
+
+	#for debug
+	def __str__(self):
+		return self.name + ' - '  + self.id + ' - ' + self.cls + ': ' + \
+			str(self.tlx // 1) + ', ' + str(self.tly // 1) + ', ' + \
+			str(self.brx // 1) + ', ' + str(self.bry // 1)
 
 	'''
 	if t protrudes downwards, this tag will be wrapped with one 
@@ -59,7 +81,7 @@ class Tag:
     '''
 	def expandRow(self, t):
 		if(t.bry > self.bry): 
-			return Tag(self.tly, self.tlx, t.bry, self.brx, \
+			return Tag(self.tlx, self.tly, self.brx, t.bry, \
 				'div', '', '', True, self, None)
 		return self
 
@@ -69,8 +91,8 @@ class Tag:
 	'''
 	def wrap(a, b):
 		#smallest tly, tlx, largest bry, brx
-		t = Tag(min(a.tly, b.tly), min(a.tlx, b.tlx), \
-			max(a.bry, b.bry), max(a.brx, b.brx), 'div', '', '', True, a, b)
+		t = Tag(min(a.tlx, b.tlx), min(a.tly, b.tly), \
+			max(a.brx, b.brx), max(a.bry, b.bry), 'div', '', '', True, a, b)
 		#below are dirty css tricks
 		#horizontal adjustment
 		ax = 100 * (a.tlx - t.tlx) / t.W

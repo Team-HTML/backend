@@ -19,8 +19,11 @@ class Tag:
     #name counter
 	count = {'wrap' : 0}
 
+	#no close
+	voidTags = {'img', 'input'}
+
 	def __init__(self, tlx = 0, tly = 0, brx = 0, bry = 0, name = 'div', \
-		style = '', url = '', wrap = False, a = None, b = None):
+		style = '', wrap = False, a = None, b = None):
 
 		self.tlx = tlx
 		self.tly = tly
@@ -31,7 +34,6 @@ class Tag:
 		self.S = self.W * self.H
 		self.name = name
 		self.style = "\tposition: relative;\n" + style
-		self.url = url
 		self.children = []
 		#creates an actual Tag
 		if wrap == False:
@@ -64,35 +66,35 @@ class Tag:
 				b.wPct = 100 * b.W / self.W
 				b.hPct = 100 * b.H / self.H
 				
-	#comparison for priority queue
 	def __lt__(self, t):
+		#comparison for priority queue
 		return True if self.tly < t.tly else False if self.tly > t.tly \
 			else True if self.H > t.H else False
 
-	#for debug
 	def __str__(self):
+		#for debug
 		return self.name + ' - '  + self.id + ' - ' + self.cls + ': ' + \
 			str(self.tlx // 1) + ', ' + str(self.tly // 1) + ', ' + \
 			str(self.brx // 1) + ', ' + str(self.bry // 1)
 
-	'''
-	if t protrudes downwards, this tag will be wrapped with one 
-    expanding to t's botRightY so this can include more tags as a row)
-    '''
 	def expandRow(self, t):
+		'''
+		if t protrudes downwards, this tag will be wrapped with one 
+	    expanding to t's botRightY so this can include more tags as a row)
+	    '''
 		if(t.bry > self.bry): 
 			return Tag(self.tlx, self.tly, self.brx, t.bry, \
-				'div', '', '', True, self, None)
+				'div', '', True, self, None)
 		return self
 
-	'''
-	used to wrap 2 tags in a bigger parent tag, 
-	and their positions are relative to their parent now.
-	'''
 	def wrap(a, b):
+		'''
+		used to wrap 2 tags in a bigger parent tag, 
+		and their positions are relative to their parent now.
+		'''
 		#smallest tly, tlx, largest bry, brx
 		t = Tag(min(a.tlx, b.tlx), min(a.tly, b.tly), \
-			max(a.brx, b.brx), max(a.bry, b.bry), 'div', '', '', True, a, b)
+			max(a.brx, b.brx), max(a.bry, b.bry), 'div', '', True, a, b)
 		#below are dirty css tricks
 		#horizontal adjustment
 		ax = 100 * (a.tlx - t.tlx) / t.W
@@ -110,23 +112,22 @@ class Tag:
 			b.style += '\ttop: ' + str(by) + '%;\n'
 		return t
 
-	#returns opening tag to be written in html file
 	def openTag(self):
+		#returns opening tag to be written in html file
 		t = '<' + self.name
 		if self.id != '':
 			t += ' id = \"' + self.id + '\"'
 		if self.cls != '':
 			t += ' class = \"' + self.cls + '\"'
-		if self.url != '':
-			if self.name == 'img':
-				return ' src = \"' + self.url + '\">\n'
-			else:
-				t += ' href = \"' + self.url + '\"'
-		return t + '>\n'
+		if self.cls == 'button':
+			t += ' onclick = "alert(\'Greetings!\')"click me'
+		if self.cls == 'input':
+			t += ' type = "text" placeholder = "is PHP the best language?"'
+		return t + '>'
 
-	#returns closing tag to be written in html file
 	def closeTag(self):
-		if self.name == 'img':
-			return ''
+		#returns closing tag to be written in html file
+		if self.name in Tag.voidTags:
+			return '\n'
 		return '</' + self.name + '>\n'
 

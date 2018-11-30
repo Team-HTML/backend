@@ -31,4 +31,6 @@ labels = []
 fpaths = []
 list_dir = ["../data/training/paragraph","../data/training/h1","../data/training/h2","../data/training/h3","../data/training/image","../data/training/button","../data/training/garbage" ]
 datas, labels, fpaths = read_data(list_dir)
-print(datas[0])
+print("This is the data", datas[0])
+def transmit(): 
+	return datas, labels, fpaths

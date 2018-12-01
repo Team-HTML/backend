@@ -1,8 +1,7 @@
 import tensorflow as tf
 import numpy as np 
 import os 
-import read 
-import PIL
+import importData
 
 train_data_dir = "data"
 
@@ -10,7 +9,9 @@ train = True
 model_path = "model"
 
 #actually evoke the function to read in data 
-fpaths, datas, labels = read.transmit()
+print("Start on the data")
+dataset= importData.transmit()
 print("Finish preprocessing the data of training")
 
-num_classes = len(set(labels))
+print(dataset.output_shapes)
+#num_classes = len(set(labels))

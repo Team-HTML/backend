@@ -37,7 +37,6 @@ def preprocess(path, path_to_save):
         #print(ind)
         cv2.imwrite('{}/{}.png'.format(path_to_save,pic_name[:ind]), threshed)
 
-        
 def preprocessBlob(blob):
     img = base64.b64decode(blob)
     grayed = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)

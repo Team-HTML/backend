@@ -1,15 +1,16 @@
 import tensorflow as tf 
 import os
 
-def _parse_function(filename, label): 
+def _parse_function(filename): 
 	image_string = tf.read_file(filename)
 	image_decoded = tf.image.decode_jpeg(image_string)
 	image_resized = tf.image.resize_images(image_decoded, [100, 100])
-	return image_resized, label 
+	return image_resized 
  
 def _read_pic(dir): 
 	labels = [] 
 	fpaths = [] 
+	datas = []
 
 	for d in dir: 
 		for fname in os.listdir(d):
@@ -17,9 +18,18 @@ def _read_pic(dir):
 			fpaths.append(fpath)
 			label = int(fname.split("_")[0])
 			labels.append(label)
+			image = _parse_function(fname)
+			datas.append(image)
 
-	return fpaths, labels
+	return fpaths, labels, datas
 
 list_dir = ["../data/training/paragraph","../data/training/h1","../data/training/h2","../data/training/h3","../data/training/image","../data/training/button","../data/training/garbage" ]
-fpaths, labels = _read_pic(list_dir)
+fpaths, labels, datas = _read_pic(list_dir)
+
+
+
 filenames = tf.constant(fpaths)
+labels = tf.constant(labels)
+
+print(datas[0])
+

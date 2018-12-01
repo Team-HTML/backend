@@ -1,11 +1,11 @@
 import tensorflow as tf 
 import os
 
-def _parse_function(filename, label): 
+def _parse_function(filename): 
 	image_string = tf.read_file(filename)
 	image_decoded = tf.image.decode_jpeg(image_string)
 	image_resized = tf.image.resize_images(image_decoded, [100, 100])
-	return image_resized, label 
+	return image_resized
  
 def _read_pic(dir): 
 	labels = [] 

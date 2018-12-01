@@ -16,8 +16,8 @@ print("Finish preprocessing the data of training")
 num_classes = len(set(labels))
 #define the placeholder. 
 #placeholder includes the image data, label, dropout rate 
-datas_placeholder = tf.placeholder(tf.float32, [None,32,32,3])
-labels_placeholder = tf.placeholder(tf.int32, [None])
+datas_placeholder = tf.placeholder(tf.float32, [None,10000])
+labels_placeholder = tf.placeholder(tf.int32, [None, num_classes])
 
 #the one we save for the dropput 
 dropput_placeholder = tf.placeholder(tf.float32)

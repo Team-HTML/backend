@@ -166,10 +166,10 @@ loss, train_op, correct_prediction, acc = accCNN(logits, y_)
 sess=tf.InteractiveSession()  
 sess.run(tf.global_variables_initializer())
 
-is_train = False
+is_train = True
 saver = tf.train.Saver(max_to_keep=1, save_relative_paths=True)
 
-n_epoch = 50
+n_epoch = 100
 batch_size = 64 
 
 if is_train: 
@@ -184,6 +184,16 @@ if is_train:
 			n_batch += 1
 		print("train loss: %f" % (train_loss / n_batch))
 		print("train acc: %f" % (train_acc / n_batch))
+
+		val_loss, val_acc, n_batch = 0, 0, 0
+		for x_val_a, y_val_a in minibatches(x_val, y_val, batch_size, shuffle=False):
+		    err, ac = sess.run([loss, acc], feed_dict={x: x_val_a, y_: y_val_a})
+		    val_loss += err
+		    val_acc += ac
+		    n_batch += 1
+		print("test loss: %f" % (val_loss / n_batch))
+		print("test acc: %f" % (val_acc / n_batch))
+		print('*' * 50)
 		save_path = saver.save(sess,"./model",global_step=epoch+1) 
 		print(save_path)
 else: 

@@ -50,11 +50,11 @@ def segmentation(data, label, ratio=0.8):
     return x_train, y_train, x_val, y_val
 
 def buildCNN(w, h, c):
-    # 占位符
+
     x = tf.placeholder(tf.float32, shape=[None, w, h, c], name='x')
     y_ = tf.placeholder(tf.int32, shape=[None, ], name='y_')
 
-    # 第一个卷积层 + 池化层（100——>50)
+
     conv1 = tf.layers.conv2d(
         inputs=x,
         filters=32,
@@ -64,7 +64,7 @@ def buildCNN(w, h, c):
         kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
     pool1 = tf.layers.max_pooling2d(inputs=conv1, pool_size=[2, 2], strides=2)
 
-    # 第二个卷积层 + 池化层 (50->25)
+
     conv2 = tf.layers.conv2d(
         inputs=pool1,
         filters=64,
@@ -74,7 +74,7 @@ def buildCNN(w, h, c):
         kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
     pool2 = tf.layers.max_pooling2d(inputs=conv2, pool_size=[2, 2], strides=2)
 
-    # 第三个卷积层 + 池化层 (25->12)
+
     conv3 = tf.layers.conv2d(
         inputs=pool2,
         filters=128,
@@ -84,7 +84,7 @@ def buildCNN(w, h, c):
         kernel_initializer=tf.truncated_normal_initializer(stddev=0.01))
     pool3 = tf.layers.max_pooling2d(inputs=conv3, pool_size=[2, 2], strides=2)
 
-    # 第四个卷积层 + 池化层 (12->6)
+
     conv4 = tf.layers.conv2d(
         inputs=pool3,
         filters=128,
@@ -96,7 +96,7 @@ def buildCNN(w, h, c):
 
     re1 = tf.reshape(pool4, [-1, 6 * 6 * 128])
 
-    # 全连接层
+
     dense1 = tf.layers.dense(inputs=re1,
                              units=1024,
                              activation=tf.nn.relu,
@@ -136,8 +136,8 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
         yield inputs[excerpt], targets[excerpt]
 
 def runable(x_train, y_train, train_op, loss, acc, x, y_, x_val, y_val):
-    # 训练和测试数据，可将n_epoch设置更大一些
-    n_epoch = 50
+    
+    n_epoch = 100
     batch_size = 64
     sess = tf.InteractiveSession()
     sess.run(tf.global_variables_initializer())

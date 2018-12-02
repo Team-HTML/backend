@@ -14,4 +14,5 @@ dataset= importData.transmit()
 print("Finish preprocessing the data of training")
 
 print(dataset.output_shapes)
+
 #num_classes = len(set(labels))

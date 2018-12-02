@@ -28,14 +28,17 @@ def preprocess(path, path_to_save):
         os.makedirs(path_to_save)
     pic_names = os.listdir(path)
     pics = ['{}/{}'.format(path,pic_name) for pic_name in pic_names]
+    for i in pics:
+        print(i)
     for pic,pic_name in zip(pics,pic_names):
         print(pic_name)
         img = cv2.imread(pic, 0)
-        print(img)
+        #print(img)
         threshed = processImg(img)
         ind = pic_name.index('.')
         #print(ind)
-        cv2.imwrite('{}/{}.png'.format(path_to_save,pic_name[:ind]), threshed)
+        name = path_to_save+'/'+pic_name[:ind]+'.png'
+        cv2.imwrite(name, threshed)
 
         
 def preprocessBlob(blob):
@@ -48,7 +51,3 @@ def preprocessBlob(blob):
 #    path = sys.argv[1]
 #    path_to_save = sys.argv[2]
 #    preprocess(path, path_to_save)
-
-preprocess("../DRAWINGS/test/","../DRAWINGS/test/output/")
-
-print("smile.jpg".index('.'))

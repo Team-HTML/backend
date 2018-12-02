@@ -1,7 +1,7 @@
 import cv2
 import numpy as np
 import os
-import myclarifai as nn
+#import myclarifai as nn
 import json
 
 def readImg(pic):

@@ -19,7 +19,6 @@ def processImg(img):
     blurred = cv2.medianBlur(resized, 5)
     threshed = cv2.adaptiveThreshold(blurred,255,cv2.ADAPTIVE_THRESH_GAUSSIAN_C,cv2.THRESH_BINARY,int(len(img)/20)*2-1,11)
     backtorgb = cv2.cvtColor(threshed,cv2.COLOR_GRAY2BGR)
-
     return backtorgb
 
 def preprocess(path, path_to_save):

@@ -4,6 +4,7 @@ import time
 import numpy as np
 import tensorflow as tf
 from skimage import io, transform
+import cv2
 
 os.environ["TF_CPP_MIN_LOG_LEVEL"] = '3'
 
@@ -40,7 +41,7 @@ def messOrder(data, labels):
 
 	return data, labels
 
-def segmentation(data, label, ratio=0.8):
+def segmentation(data, label, ratio=0.99):
 	num_example = data.shape[0]
 	s = np.int(num_example * ratio)
 
@@ -52,7 +53,7 @@ def segmentation(data, label, ratio=0.8):
 
 	return x_train, y_train, x_val, y_val
 
-path = ["../data/training/paragraph","../data/training/h1","../data/training/h2","../data/training/h3","../data/training/image","../data/training/button","../data/training/garbage", "../data/testing/paragraph","../data/testing/h1","../data/testing/h2","../data/testing/h3","../data/testing/image","../data/testing/garbage"]
+path = ["../data/training/paragraph","../data/training/h1","../data/training/h2","../data/training/h3","../data/training/image","../data/training/button","../data/training/garbage", "../data/testing/paragraph","../data/testing/h1","../data/testing/h2","../data/testing/h3","../data/testing/image","../data/testing/garbage", "../data/testing/button"]
 
 print("read the image")
 imgs, labels = read_img(path,100,100)
@@ -149,8 +150,11 @@ def minibatches(inputs=None, targets=None, batch_size=None, shuffle=False):
 		yield inputs[excerpt], targets[excerpt]
 
 def read_test(fpath): 
-	img = io.imread(fpath)
-	img = transform.resize(img, (100, 100))
+	#img = io.imread(fpath)
+	#img = transform.resize(img, (100, 100))
+	#print(np.shape(img))
+	img = cv2.imread(fpath)
+	img = cv2.resize(img, (100,100))
 	imgs = []
 	imgs.append(img)
 	return np.asarray(imgs,np.float32)
@@ -166,7 +170,7 @@ loss, train_op, correct_prediction, acc = accCNN(logits, y_)
 sess=tf.InteractiveSession()  
 sess.run(tf.global_variables_initializer())
 
-is_train = True
+is_train = False
 saver = tf.train.Saver(max_to_keep=1, save_relative_paths=True)
 
 n_epoch = 100
@@ -203,14 +207,24 @@ else:
 	graph = tf.get_default_graph() 
 	x = graph.get_tensor_by_name("x:0")
 
-	data = read_test("5_0.png")
-	feed_dict = {x:data}
-	#logits = graph.get_tensor_by_name("logits_eval:0")
+	outside = False
+	for i in range(1,100): 
+		print("#################################", i, "picture")
+		for j in range(100): 
+			target = "pic"+str(i)+"_"+str(j)+".jpg"
+			path = os.path.join("demo_after_cut" ,target)
+			if os.path.exists(path): 
+				data = read_test(path)
+				feed_dict = {x:data}
+				classification_result = sess.run(logits, feed_dict)
+				print("the num of element: ", j, tf.argmax(classification_result,1).eval())
+			else:
+				if j == 0: 
+					outside = True 
+				break
+		if outside: 
+			break 
 
-	classification_result = sess.run(logits,feed_dict)
-	print(tf.argmax(classification_result,1).eval())
-
-	
 	#print("After the restoring")
 	#val_loss,val_acc=sess.run([loss,acc], feed_dict={x: mnist.test.images, y_: mnist.test.labels})
 	#print('val_loss:%f, val_acc:%f'%(val_loss,val_acc))
